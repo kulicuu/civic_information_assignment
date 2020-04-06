@@ -1,11 +1,12 @@
 
 
-
 c = console.log.bind console
+
 
 request = require 'request'
 yaml = require 'js-yaml'
 fs = require 'fs'
+color = require 'bash-color'
 
 
 endpoints =
@@ -47,12 +48,17 @@ main_google = ->
                 qs:
                     key: config.google_api_key
                     address: address3
-            voter_info_opts =
+            voter_info_opts_one =
                 uri: endpoints.google_api.elections.voterInfoQuery
                 qs:
                     key: config.google_api_key
                     address: address1
-                    # electionId: 4964
+            voter_info_opts_two =
+                uri: endpoints.google_api.elections.voterInfoQuery
+                qs:
+                    key: config.google_api_key
+                    address: address2
+
         catch e
             c e
 
@@ -63,6 +69,7 @@ main_google = ->
                     c res.statusCode
                     c body
                     fs.writeFileSync('./diagnostic_data/google_ci_electionQuery_raw_data.txt', body, 'utf8')
+                    c (color.blue "Finished CI ElectionQuery One", on)
                     resolve1()
         e2 = ->
             new Promise (resolve2) ->
@@ -71,11 +78,34 @@ main_google = ->
                     c res.statusCode
                     c body
                     fs.writeFileSync('./diagnostic_data/google_ci_electionQuery_raw_data_with_address_param.txt', body, 'utf8')
+                    c (color.blue "Finished CI ElectionQuery Two", on)
                     resolve2()
+
+        e3 = ->
+            new Promise (resolve3) ->
+                common_hit_endpoint voter_info_opts_one, (err, res, body) ->
+                    c err
+                    c res.statusCode
+                    c body
+                    fs.writeFileSync('./diagnostic_data/google_ci_voterInfoQuery_raw_data_with_address_one.txt', body, 'utf8')
+                    c (color.blue "Finished CI VoterInfoQuery One", on)
+                    resolve3()
+
+        e4 = ->
+            new Promise (resolve4) ->
+                common_hit_endpoint voter_info_opts_two, (err, res, body) ->
+                    c err
+                    c res.statusCode
+                    c body
+                    fs.writeFileSync('./diagnostic_data/google_ci_voterInfoQuery_raw_data_with_address_two.txt', body, 'utf8')
+                    c (color.blue "Finished CI VoterInfoQuery", on)
+                    resolve4()
 
         await e1()
         await e2()
-        c "Finished CivicInformation routines."
+        await e3()
+        await e4()
+        c (color.green "Finished CivicInformation routines.", on)
         resolve0()
 
 
@@ -105,6 +135,7 @@ main_maplight = ->
                     c "Attributes on 'data' property:", Object.keys(arq.data)
                     c "Aggregate totals:", arq.data.aggregate_totals
                     c "Number of contribution records returned: ", arq.data.rows.length
+                    c (color.blue "Finished MapLight Contributions 2020 query", on)
                     resolve()
 
         await e1()
@@ -119,15 +150,16 @@ main_maplight = ->
                     c "Attributes on 'data' property:", Object.keys(arq.data)
                     c "Aggregate totals:", arq.data.aggregate_totals
                     c "Number of contribution records returned: ", arq.data.rows.length
+                    c (color.blue "Finished MapLight Contributions 2016 query", on)
                     resolve()
 
         await e2()
-        c "Finished MapLight routines."
+        c (color.green "Finished MapLight routines.", on)
         resolve0()
 
 main = ->
     await main_google()
     await main_maplight()
-    c "Finished all routines."
+    c (color.yellow "Finished all routines.", on)
 
 main()

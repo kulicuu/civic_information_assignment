@@ -1,5 +1,6 @@
 {
     "dependencies": {
+        "bash-color": "latest",
         "js-yaml": "latest",
         "request": "latest"
     }

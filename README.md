@@ -140,8 +140,6 @@ This is odd, because the API spec says that the only required parameter is `addr
 Now even though that failed, we had hoped that with a comprehensive list of elections via the `electionQuery` endpoint, we would be able to query each election individually using the `voterInfoQuery` endpoint along with the `electionId` parameter, but the `electionQuery` endpoint does not give us a useful list of elections.  As seen above, we got only two contests, one primary and one apparent stub, a non-existing contest.  I repeat, the `electionQuery` endpoint (at least according to the documented specification) allows for no parameters, none.  
 
 
-
-
 ## Conclusion, Discussion
 
 At this point, it would appear that our options are exhausted.  It would appear that these APIs are poorly constructed, poorly implemented, poorly documented.  They are incomplete.  This task as defined is not possible with the tools specified.
